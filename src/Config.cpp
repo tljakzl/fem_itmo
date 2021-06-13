@@ -2,7 +2,7 @@
 
 std::vector<std::function<double(Point)>> Config::BCOND1_FUNCS = {
 	[&](Point p) {
-		return p.x + p.y;
+		return p.x + p.y + 1;
 	}
 };
 

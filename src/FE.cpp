@@ -125,7 +125,7 @@ std::vector<std::vector<double>> FE::calcb() {
 
 	for (int i = 0; i < nodeCount; i++) {
 		for (int j = 0; j < 1; j++) {
-			_b[i][j] = hx * hy * 900 * __b[i][j];
+			_b[i][j] = hx * hy / 900 * __b[i][j];
 		}
 	}
 
@@ -319,4 +319,19 @@ std::vector<std::vector<double>> FE::calcRP() {
 	}
 
 	return _RP;
+}
+
+
+void FE::makeImpactToGlobalMatrix(std::map<int, std::vector<std::pair<int, double>>>& _m) {
+	for (int i = 0; i < nodeCount; i++) {
+		for (int j = 0; j < nodeCount; j++) {
+			_m[nodes[i]->globalID].push_back({ nodes[j]->globalID, _A[i][j] });
+		}
+	}
+}
+
+void FE::makeImpactToGlobalRP(std::vector<double>& _rp) {
+	for (int i = 0; i < nodeCount; i++) {
+		_rp[nodes[i]->globalID] += _RP[i][0];
+	}
 }

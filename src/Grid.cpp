@@ -2,7 +2,6 @@
 #include <set>
 #include <Config.h>
 
-
 Grid::Grid(std::vector<Point> points,
 	std::map<int, std::vector<int>> rectangles,
 	std::map<int, int> bcond1,
@@ -85,6 +84,11 @@ Grid::Grid(std::vector<Point> points,
 		finiteElements.push_back(fe);
 	}
 
+	for (auto &bc1_kvp : bcond1) {
+		Point _p = points[bc1_kvp.first - 1];
+		uniqueNodes[{_p.x, _p.y}]->setBcond1(Config::GET_BCOND1_FUNC(bc1_kvp.second));
+	}
+
 	for (auto unode_kvp : uniqueNodes) {
 		allNodes.push_back(unode_kvp.second);
 	}
@@ -96,6 +100,8 @@ Grid::Grid(std::vector<Point> points,
 	for (int g_i = 1; g_i <= allNodes.size(); g_i++) {
 		allNodes[g_i - 1]->globalID = g_i;
 	}
+
+	int sssb = 0;
 
 }
 
@@ -122,21 +128,21 @@ std::vector<Point> Grid::scaffoldFEPoints(std::vector<Point> points) {
 
 
 	auxilaryPoints.push_back(
-		*new Point(mid_x, min_y)
+		Point(mid_x, min_y)
 	);
 
 	auxilaryPoints.push_back(
-		*new Point(min_x, mid_y)
+		Point(min_x, mid_y)
 	);
 	auxilaryPoints.push_back(
-		*new Point(mid_x, mid_y)
+		Point(mid_x, mid_y)
 	);
 	auxilaryPoints.push_back(
-		*new Point(max_x, mid_y)
+		Point(max_x, mid_y)
 	);
 
 	auxilaryPoints.push_back(
-		*new Point(mid_x, max_y)
+		Point(mid_x, max_y)
 	);
 
 	return auxilaryPoints;
@@ -148,4 +154,39 @@ void Grid::calculateLocalMatrices() {
 		fe->calcA(); // матрица А
 		fe->calcRP(); // вектор правой части
 	}
+}
+
+
+DMat<double> Grid::buildGlobalMatrix() {
+	std::map<int, std::vector<std::pair<int, double>>> _tmp;
+	for (auto& fe : finiteElements) {
+		fe->makeImpactToGlobalMatrix(_tmp);
+	}
+	DMat<double> dmat = DMat<double>(_tmp, allNodes.size());
+	const double INF = 1e30;
+	for (auto& node : allNodes) {
+		if (node->hasBcond1) {
+			dmat.setDiag(node->globalID,  INF);
+		}
+	}
+	return dmat;
+}
+
+std::vector<double> Grid::buildGlobalRP() {
+	std::vector<double> _rp(allNodes.size() + 1);
+	for (auto& fe : finiteElements) {
+		fe->makeImpactToGlobalRP(_rp);
+	}
+	const double INF = 1e30;
+	for (auto& node : allNodes) {
+		if (node->hasBcond1) {
+			_rp[node->globalID] = INF * node->bcond1(node->p);
+		}
+	}
+	return _rp;
+}
+
+Grid::~Grid() {
+	for (Node* node : allNodes) delete node;
+	for (FE* fe : finiteElements) delete fe;
 }

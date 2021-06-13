@@ -2,6 +2,7 @@
 #include "Node.h"
 #include <vector>
 #include <functional>
+#include <map>
 
 class FE
 {
@@ -24,6 +25,9 @@ public:
 	std::vector<std::vector<double>> calcbs3y();
 	std::vector<std::vector<double>> calcbs2x();
 	std::vector<std::vector<double>> calcbs2y();
+
+	void makeImpactToGlobalMatrix(std::map<int, std::vector<std::pair<int, double>>>&);
+	void makeImpactToGlobalRP(std::vector<double>&);
 
 	
 	double hx, hy;

@@ -5,7 +5,7 @@
 
 namespace Core
 {
-    static const unsigned int SCR_WIDTH  = 16 * 100;
+    static const unsigned int SCR_WIDTH  = 9 * 100;
     static const unsigned int SCR_HEIGHT = 9 * 100;
 
     GLFWwindow* CreateWindow();

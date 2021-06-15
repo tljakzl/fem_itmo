@@ -98,5 +98,6 @@ Mesh::~Mesh() {
 void Mesh::draw() {
     shader.use();
     glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, gridVisual.size());
+    glDrawArrays(GL_TRIANGLES, 0, gridVisual.size()/6);
+    glBindVertexArray(0);
 }

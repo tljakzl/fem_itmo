@@ -24,7 +24,7 @@ int main() {
     }
 
     Generator g;
-    g.generateGrid(50, 50, 1, 1);
+    g.generateGrid(5, 5, 1, 1);
 
     Builder builder = Builder();
     Grid* grid = builder.createGrid();
@@ -51,18 +51,35 @@ int main() {
 
     Mesh mesh(grid, q);
 
-    float offsetSize = -0.55;
+    float offsetSize = -0.5;
     glm::vec3 offsetAxis(offsetSize, offsetSize, 0.0);
 
     glm::vec3 axisXStart(0,0,0);
-    glm::vec3 axisXEnd(1 + 0.05,0,0);
+    glm::vec3 axisXEnd(1,0,0);
     glm::vec3 axisYStart(0,0,0);
-    glm::vec3 axisYEnd(0,1 + 0.05,0);
+    glm::vec3 axisYEnd(0,1,0);
+
+    std::vector<Line*> lines;
+
+    for (int i = 0; i <= 10; ++i){
+        auto delta = i*0.1f;
+        float x = delta;
+        float y = delta;
+        auto sizeLine = -0.03f;
+        glm::vec3 startX(x, 0, 0);
+        glm::vec3 endX(x, sizeLine, 0.f);
+
+        glm::vec3 startY(0, y, 0);
+        glm::vec3 endY(sizeLine, y, 0.f);
+
+        lines.push_back(new Line(startX + offsetAxis, endX + offsetAxis));
+        lines.push_back(new Line(startY + offsetAxis, endY + offsetAxis));
+    }
 
     Line testLineX(axisXStart + offsetAxis, axisXEnd + offsetAxis);
     Line testLineY(axisYStart + offsetAxis, axisYEnd + offsetAxis);
 
-    //testLine.setColor({1,1,1});
+
     while (!glfwWindowShouldClose(window))
     {
         // input
@@ -74,15 +91,24 @@ int main() {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        for(auto line : lines)
+            line->draw();
+
         mesh.draw();
+
         testLineX.draw();
         testLineY.draw();
+
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
+
     glfwTerminate();
+
+    for(auto line : lines)
+        delete line;
 
     return 0;
 }

@@ -100,9 +100,6 @@ Grid::Grid(std::vector<Point> points,
 	for (int g_i = 1; g_i <= allNodes.size(); g_i++) {
 		allNodes[g_i - 1]->globalID = g_i;
 	}
-
-	int sssb = 0;
-
 }
 
 std::vector<Point> Grid::scaffoldFEPoints(std::vector<Point> points) {

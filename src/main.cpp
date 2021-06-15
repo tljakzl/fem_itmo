@@ -88,7 +88,7 @@ int main() {
 
         // render
         // ------
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.1549f, 0.3694f, 0.4757f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         for(auto line : lines)

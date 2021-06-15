@@ -27,8 +27,6 @@ public:
 		std::map<std::pair<int, int>, int> bcond2, 
 		std::map<std::pair<int, int>, int> bcond3);
 	~Grid();
-	std::vector<Point> scaffoldFEPoints(std::vector<Point> points);
-	
 
 	void calculateLocalMatrices();
 	DMat<double> buildGlobalMatrix();

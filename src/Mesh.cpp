@@ -57,21 +57,12 @@ Mesh::Mesh(Grid* grid, const std::vector<double>& q)
     }
 
     for (auto &fe : grid->finiteElements) {
-        std::vector<Point> rectangle1 = {fe->nodes[0]->p, fe->nodes[1]->p, fe->nodes[3]->p, fe->nodes[4]->p};
-        std::vector<double> valuesOnRectangle1 = {q[fe->nodes[0]->globalID], q[fe->nodes[1]->globalID],q[fe->nodes[3]->globalID], q[fe->nodes[4]->globalID]};
+        std::vector<Point> rectangle1 = {fe->nodes[0]->p, fe->nodes[4]->p, fe->nodes[8]->p, fe->nodes[12]->p};
+        std::vector<double> valuesOnRectangle1 = {q[fe->nodes[0]->globalID] + q[fe->nodes[1]->globalID] + q[fe->nodes[2]->globalID] + q[fe->nodes[3]->globalID],
+                                                  q[fe->nodes[4]->globalID] + q[fe->nodes[5]->globalID] + q[fe->nodes[6]->globalID] + q[fe->nodes[7]->globalID],
+                                                  q[fe->nodes[8]->globalID] + q[fe->nodes[9]->globalID] + q[fe->nodes[10]->globalID] + q[fe->nodes[11]->globalID],
+                                                  q[fe->nodes[12]->globalID] + q[fe->nodes[13]->globalID] + q[fe->nodes[14]->globalID] + q[fe->nodes[15]->globalID]};
         AddQuad(rectangle1, valuesOnRectangle1);
-
-        std::vector<Point> rectangle2 = {fe->nodes[1]->p, fe->nodes[2]->p, fe->nodes[4]->p, fe->nodes[5]->p};
-        std::vector<double> valuesOnRectangle2 = {q[fe->nodes[1]->globalID], q[fe->nodes[2]->globalID],q[fe->nodes[4]->globalID], q[fe->nodes[5]->globalID]};
-        AddQuad(rectangle2, valuesOnRectangle2);
-
-        std::vector<Point> rectangle3 = {fe->nodes[3]->p, fe->nodes[4]->p, fe->nodes[6]->p, fe->nodes[7]->p};
-        std::vector<double> valuesOnRectangle3 = {q[fe->nodes[3]->globalID], q[fe->nodes[4]->globalID],q[fe->nodes[6]->globalID], q[fe->nodes[7]->globalID]};
-        AddQuad(rectangle3, valuesOnRectangle3);
-
-        std::vector<Point> rectangle4 = {fe->nodes[4]->p, fe->nodes[5]->p, fe->nodes[7]->p, fe->nodes[8]->p};
-        std::vector<double> valuesOnRectangle4 = {q[fe->nodes[4]->globalID], q[fe->nodes[5]->globalID],q[fe->nodes[7]->globalID], q[fe->nodes[8]->globalID]};
-        AddQuad(rectangle4, valuesOnRectangle4);
     }
 
     glGenVertexArrays(1, &VAO);

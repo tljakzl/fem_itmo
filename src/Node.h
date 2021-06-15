@@ -6,6 +6,7 @@ class Node
 {
 public:
 	int globalID;
+	int priority;
 	Point p;
 	bool hasBcond1=false;
 	std::function<double(Point)> bcond1;

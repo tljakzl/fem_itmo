@@ -21,5 +21,5 @@ void Node::setBcond1(std::function<double(Point)> f) {
 }
 
 bool Node::operator<(const Node& val) const {
-	return p < val.p;
+	return p < val.p && priority < val.priority;
 }

@@ -24,7 +24,7 @@ int main() {
     }
 
     Generator g;
-    g.generateGrid(5, 5, 1, 1);
+    g.generateGrid(50, 50, 1, 1);
 
     Builder builder = Builder();
     Grid* grid = builder.createGrid();

@@ -13,26 +13,26 @@ Grid::Grid(std::vector<Point> points,
 
 
 	// нужно для удаления повторяющихся нод в глобальном смысле
-	std::map<std::pair<double, double>, Node*> uniqueNodes;
+	std::map<std::tuple<double, double, int>, Node*> uniqueNodes;
 
 	for (auto rectangle_kvp : rectangles) {
 		std::vector<Node*> FENodes;
-		std::vector<Point> FEPoints;
 		std::vector<Point> initialPoints;
 		for (int p_i : rectangle_kvp.second) {
 			initialPoints.push_back(points[p_i - 1]);
 		}
-		FEPoints = scaffoldFEPoints(initialPoints);
 		
-		for (auto p : FEPoints) {
+		for (auto p : initialPoints) {
+            for(int i = 1; i <=4 ;++i)
+            {
+                if (uniqueNodes.count({ p.x, p.y , i}) == 0) {
+                    Node* node = new Node(p);
+                    node->priority = i;
+                    uniqueNodes[{p.x, p.y, i}] = node;
 
-			if (uniqueNodes.count({ p.x, p.y }) == 0) {
-				Node* node = new Node(p);
-				uniqueNodes[{p.x, p.y}] = node;
-				
-			}
-			FENodes.push_back(uniqueNodes[{ p.x, p.y }]);
-
+                }
+                FENodes.push_back(uniqueNodes[{ p.x, p.y , i}]);
+            }
 		}
 
 		std::function<double(Point)> bcond3x = Config::GET_ZERO_FUNC(), 
@@ -86,7 +86,10 @@ Grid::Grid(std::vector<Point> points,
 
 	for (auto &bc1_kvp : bcond1) {
 		Point _p = points[bc1_kvp.first - 1];
-		uniqueNodes[{_p.x, _p.y}]->setBcond1(Config::GET_BCOND1_FUNC(bc1_kvp.second));
+		uniqueNodes[{_p.x, _p.y, 1}]->setBcond1(Config::GET_BCOND1_FUNC(bc1_kvp.second));
+		uniqueNodes[{_p.x, _p.y, 2}]->setBcond1(Config::GET_BCOND1_FUNC(bc1_kvp.second));
+		uniqueNodes[{_p.x, _p.y, 3}]->setBcond1(Config::GET_BCOND1_FUNC(bc1_kvp.second));
+		uniqueNodes[{_p.x, _p.y, 4}]->setBcond1(Config::GET_BCOND1_FUNC(bc1_kvp.second));
 	}
 
 	for (auto unode_kvp : uniqueNodes) {
@@ -100,50 +103,6 @@ Grid::Grid(std::vector<Point> points,
 	for (int g_i = 1; g_i <= allNodes.size(); g_i++) {
 		allNodes[g_i - 1]->globalID = g_i;
 	}
-}
-
-std::vector<Point> Grid::scaffoldFEPoints(std::vector<Point> points) {
-	std::sort(points.begin(), points.end());
-
-	double  max_x = DBL_MIN, min_x = DBL_MAX,
-			max_y = DBL_MIN, min_y = DBL_MAX;
-
-	for (auto& point : points) {
-		max_x = std::max(max_x, point.x);
-		min_x = std::min(min_x, point.x);
-		max_y = std::max(max_y, point.y);
-		min_y = std::min(min_y, point.y);
-	}
-
-	std::vector<Point> auxilaryPoints;
-
-	for (auto p : points) auxilaryPoints.push_back(p);
-
-
-	double  mid_x = min_x + (max_x - min_x) / 2,
-			mid_y = min_y + (max_y - min_y) / 2;
-
-
-	auxilaryPoints.push_back(
-		Point(mid_x, min_y)
-	);
-
-	auxilaryPoints.push_back(
-		Point(min_x, mid_y)
-	);
-	auxilaryPoints.push_back(
-		Point(mid_x, mid_y)
-	);
-	auxilaryPoints.push_back(
-		Point(max_x, mid_y)
-	);
-
-	auxilaryPoints.push_back(
-		Point(mid_x, max_y)
-	);
-
-	return auxilaryPoints;
-
 }
 
 void Grid::calculateLocalMatrices() {
